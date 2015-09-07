@@ -1,19 +1,11 @@
 import os
 import sys
 from flask import Flask
+from app import app
 
-app = Flask(__name__)
-
-from app import views
-
-#app.run()
-
-@app.route('/')
-@app.route('/index', methods=['GET','POST'])
-def index(): 
-        return render_template('index.html')
+#app = Flask(__name__)
 
 def hello():
     print(sys.version)
     print('this file is being read')
-    return 'this file is being read now'
+    return app
