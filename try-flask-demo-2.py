@@ -8,7 +8,11 @@ from app import views
 
 #app.run()
 
-#@app.route('/')
+@app.route('/')
+@app.route('/index', methods=['GET','POST'])
+def index(): 
+        return render_template('index.html')
+
 def hello():
     print(sys.version)
     print('this file is being read')
