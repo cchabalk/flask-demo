@@ -7,4 +7,5 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     print(sys.version)
-    return 'bye'
+    print('this file is being read')
+    return print('this file is being read')

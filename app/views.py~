@@ -1,0 +1,61 @@
+from flask import render_template, redirect, request
+from app import app
+from bokeh.plotting import figure
+    
+from bokeh.charts import TimeSeries
+from bokeh.resources import CDN
+from bokeh.embed import file_html, components
+
+import pandas as pd
+import json
+import requests
+import datetime
+
+@app.route('/')
+@app.route('/index', methods=['GET','POST'])
+def index(): 
+        return render_template('index.html')
+
+
+@app.route('/graph', methods=['GET', 'POST'])
+def graph():
+    
+
+    
+
+    tickerSymbol = request.form['ticker'].upper()
+    features = request.form.getlist('features')
+
+    quandleKey = 'Hss7TYkWM9KUsB5wfvRb'
+    #db = 'GOOG'
+    #ticker = 'NASDAQ_AAPL'
+    #fullTickerText = db + '/' +ticker
+
+    quandleRequest = 'https://www.quandl.com/api/v3/datasets/WIKI/' + tickerSymbol + '.json?api_key=' + quandleKey
+    r = requests.get(quandleRequest)
+
+    if (r.status_code != 200):
+        return render_template('errorPage.html')
+
+
+    df = pd.DataFrame(r.json()['dataset']['data'],columns = r.json()['dataset']['column_names'])
+    df['Date'] = pd.to_datetime(df['Date'])
+    df.rename(columns=lambda x: tickerSymbol + ': ' + x, inplace=True)
+
+    if len(features)==0:
+        p = figure(x_axis_type = "datetime",title='Data from Quandl WIKI set')
+    else:
+        columns = ['Date']+features
+        tickerText = tickerSymbol+': '
+        columns = [tickerText + s for s in columns]
+        p = TimeSeries(df[columns],legend=True,index=tickerText + 'Date',title='Data from Quandl WIKI set',xlabel='date',width=600, height=600)
+
+    #p.legend.orientation = "top_right"
+    htmlPlot = file_html(p,CDN,"my plot")
+
+    return render_template('graph.html',
+				tickerSymbol = tickerSymbol,
+				features = features,
+                                plottingData = htmlPlot)
+
+
