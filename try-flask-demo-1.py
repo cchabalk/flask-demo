@@ -8,4 +8,4 @@ app = Flask(__name__)
 def hello():
     print(sys.version)
     print('this file is being read')
-    return print('this file is being read')
+    return 'this file is being read'
